@@ -1,1 +1,0 @@
-/home/burak/projects/sq-solver/solver/target/debug/solver: /home/burak/projects/sq-solver/solver/src/main.rs /home/burak/projects/sq-solver/solver/src/solve.rs /home/burak/projects/sq-solver/solver/src/trie.rs
