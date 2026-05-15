@@ -19,13 +19,13 @@ fn extract_board(js: String) -> Vec<Vec<u8>> {
 
     let board: Vec<Vec<u8>> = js[arr_start + 1..arr_end]
         .split(',')
-        .map(|row| {
-            row.trim()
-                .trim_matches(|c| c == '"' || c == '\\')
-                .bytes()
-                .collect::<Vec<u8>>()
+        .filter_map(|row| {
+            let row = row
+                .trim()
+                .strip_prefix('"')
+                .and_then(|s| s.strip_suffix('"'))?;
+            Some(row.bytes().collect())
         })
-        .filter(|row| !row.is_empty())
         .collect();
     board
 }
