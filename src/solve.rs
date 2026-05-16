@@ -58,8 +58,6 @@ fn dfs(
 }
 
 pub fn solve(board: &Vec<Vec<u8>>, trie: &TrieNode) -> Vec<String> {
-    // TODO the board might not be a rectangle
-    // find max len for each use
     let rows = board.len();
     let cols = board[0].len();
     let mut visited = vec![vec![false; cols]; rows];

@@ -4,6 +4,9 @@ mod trie;
 use crate::solve::*;
 use crate::trie::*;
 
+use std::env;
+use std::io;
+
 fn extract_board(js: String) -> Vec<Vec<u8>> {
     let start = js.find("gTodayDateStr = '").unwrap() + "gTodayDateStr = '".len();
     let end = js[start..].find('\'').unwrap() + start;
@@ -30,16 +33,41 @@ fn extract_board(js: String) -> Vec<Vec<u8>> {
     board
 }
 
+// denote empty cells with #
+// inputs: daily, manual
+
 fn main() {
-    let body: String = ureq::get("https://squaredle.app/api/today-puzzle-config.js")
-        .call()
-        .unwrap()
-        .body_mut()
-        .read_to_string()
-        .unwrap();
+    let args: Vec<String> = env::args().collect();
+    let mut board: Vec<Vec<u8>> = vec![];
+
+    if args[1] == "daily" {
+        let body: String = ureq::get("https://squaredle.app/api/today-puzzle-config.js")
+            .call()
+            .unwrap()
+            .body_mut()
+            .read_to_string()
+            .unwrap();
+        board = extract_board(body);
+    } else if args[1] == "manual" {
+        println!("Enter the board. Use # to denote empty cells. Enter a newline when you're done.");
+        let mut input = String::new();
+
+        loop {
+            input.clear();
+            io::stdin().read_line(&mut input).unwrap();
+
+            if input.trim().is_empty() {
+                break;
+            }
+            input = input.trim().to_lowercase().replace("#", " ");
+            board.push(input.bytes().collect());
+        }
+    } else {
+        eprintln!("Unknown argument: {}", args[1]);
+        return;
+    }
 
     let mut root = TrieNode::new();
-    let board = extract_board(body);
     root.load_file("word_list.txt");
 
     let found = solve(&board, &root);
